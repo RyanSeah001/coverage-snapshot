@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<title>Coverage Snapshot</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+/* Layout: app chrome (theme-aware) with an input rail on top, and a fixed-width light "report sheet" below that exports as a PNG. */
+:root{
+  --bg:#eef2f1; --panel:#ffffff; --ink:#15302c; --muted:#5b6f6b; --line:#d9e2df;
+  --accent:#0f7a5f; --accent-ink:#ffffff; --accent-soft:#e1f1eb;
+  --warn:#b4600f; --warn-soft:#fbecd9; --bad:#b42318; --bad-soft:#fbe2e0;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1716; --panel:#172220; --ink:#e3ece9; --muted:#97aaa5; --line:#2a3936;
+  --accent:#3cc29a; --accent-ink:#06231b; --accent-soft:#16352d;
+  --warn:#f0a75a; --warn-soft:#3a2a17; --bad:#f2847a; --bad-soft:#3d1d1a; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1716; --panel:#172220; --ink:#e3ece9; --muted:#97aaa5; --line:#2a3936;
+  --accent:#3cc29a; --accent-ink:#06231b; --accent-soft:#16352d;
+  --warn:#f0a75a; --warn-soft:#3a2a17; --bad:#f2847a; --bad-soft:#3d1d1a; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5}
+.app{max-width:1100px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));display:grid;gap:20px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.top h1{font-family:var(--display);font-weight:800;font-size:clamp(26px,4vw,34px);margin:0;letter-spacing:-.5px;text-wrap:balance}
+.top p{margin:4px 0 0;color:var(--muted);max-width:62ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;display:grid;gap:16px}
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.inputs{grid-template-columns:1fr}}
+.drop{border:2px dashed var(--line);border-radius:12px;padding:22px;display:grid;place-items:center;text-align:center;gap:6px;cursor:pointer;min-height:150px;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{font-size:16px}
+.drop span{color:var(--muted);font-size:13px}
+textarea{width:100%;min-height:150px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:12px;font:13px/1.45 var(--body);background:var(--bg);color:var(--ink)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:600 14px var(--body);border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:hover{filter:brightness(1.05)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,.drop:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+select{font:500 14px var(--body);padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink)}
+.label{font-size:12px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent-soft);color:var(--ink);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;font-variant-numeric:tabular-nums}
+.chip button{border:0;background:transparent;padding:0 6px;font-size:16px;line-height:1;color:var(--muted)}
+.note{font-size:13px;color:var(--muted)}
+.msg{font-size:13px;padding:8px 12px;border-radius:8px;background:var(--warn-soft);color:var(--warn)}
+.samplebar{font-size:13px;padding:8px 12px;border-radius:8px;background:var(--accent-soft);color:var(--ink)}
+details summary{cursor:pointer;font-weight:600}
+details ol{margin:8px 0 0;padding-left:20px;color:var(--muted);font-size:14px}
+.sheetwrap{overflow-x:auto;border-radius:16px}
+
+/* ---------- Report sheet: a deliberate single light "paper" look so the exported PNG is consistent ---------- */
+.sheet{width:1040px;background:#edf1f0;color:#16302b;font-family:var(--body);padding:36px;border-radius:16px}
+.sheet *{box-sizing:border-box}
+.s-head{background:#123d35;color:#fff;border-radius:18px;padding:30px 34px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}
+.s-head h2{font-family:var(--display);font-weight:800;font-size:38px;margin:0;letter-spacing:-.5px;line-height:1.1}
+.s-head .sub{opacity:.82;font-size:16px;margin-top:6px}
+.s-head .r{text-align:right;font-size:14px;opacity:.9;line-height:1.6}
+.s-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0 6px}
+.s-kpi{background:#fff;border-radius:14px;padding:18px 20px}
+.s-kpi .l{font-size:12px;color:#5b6f6b;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.s-kpi .v{font-family:var(--display);font-size:29px;font-weight:800;margin-top:6px;color:#0f6a53;font-variant-numeric:tabular-nums}
+.s-kpi .n{font-size:12.5px;color:#5b6f6b;margin-top:2px}
+.s-h{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:#5b6f6b;margin:24px 0 10px;font-weight:700}
+.s-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.s-card{background:#fff;border-radius:14px;padding:20px;border-top:5px solid var(--c)}
+.s-card .t{font-size:14.5px;font-weight:700;color:var(--c)}
+.s-card .a{font-family:var(--display);font-size:28px;font-weight:800;margin:6px 0 8px;font-variant-numeric:tabular-nums}
+.s-card .a small{font-family:var(--body);font-size:14px;font-weight:600;color:#5b6f6b}
+.s-card ul{list-style:none;margin:0;padding:0;font-size:13px;color:#3d524d;line-height:1.6}
+.s-card li{display:flex;justify-content:space-between;gap:10px}
+.s-card li b{font-weight:600;color:#16302b;white-space:nowrap;font-variant-numeric:tabular-nums}
+.s-card .till{font-size:12px;color:#748783;margin-top:8px}
+.s-table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;font-size:13px}
+.s-table th{background:#f5f8f7;text-align:left;padding:10px 12px;font-size:11.5px;color:#5b6f6b;text-transform:uppercase;letter-spacing:.5px}
+.s-table td{padding:9px 12px;border-top:1px solid #edf1f0;font-variant-numeric:tabular-nums}
+.s-table .num{text-align:right}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.ok{background:#e1f1eb;color:#0f6a53}.warn{background:#fbecd9;color:#a45410}.bad{background:#fbe2e0;color:#b42318}.mute{background:#eef1f0;color:#5b6f6b}
+.s-two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.s-box{background:#fff;border-radius:14px;padding:20px}
+.s-box h3{font-size:15px;margin:0 0 8px}
+.s-box ul{margin:0;padding-left:18px}
+.s-box li{font-size:13px;color:#3d524d;line-height:1.6}
+.s-box.alert{border-left:5px solid #d9822b}
+.s-foot{font-size:11.5px;color:#748783;margin-top:18px;text-align:center}
+.empty{padding:40px;text-align:center;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:14px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;padding:20px;z-index:20}
+.modal .in{background:var(--panel);border-radius:14px;padding:16px;max-width:900px;max-height:90vh;overflow:auto;display:grid;gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <div class="top">
+    <div>
+      <h1>Coverage Snapshot</h1>
+      <p>Upload a client's ePartner policy detail pages. The app reads every policy and builds a one-page coverage summary you can save as an image. Everything is read in your browser and nothing is stored.</p>
+    </div>
+    <div class="row">
+      <button id="btnSave" class="primary" type="button">Save as PNG</button>
+    </div>
+  </div>
+
+  <section class="panel" aria-label="Add policy data">
+    <div class="inputs">
+      <div>
+        <div class="label" style="margin-bottom:8px">Upload pages</div>
+        <label class="drop" id="drop" tabindex="0">
+          <strong>Drop files here or click to choose</strong>
+          <span>Saved ePartner pages (.html) or copied text (.txt). You can add several at once.</span>
+          <input id="file" type="file" accept=".html,.htm,.txt" multiple hidden>
+        </label>
+      </div>
+      <div>
+        <div class="label" style="margin-bottom:8px">Or paste page text</div>
+        <textarea id="paste" placeholder="On a Policy Detail page in ePartner: press Ctrl+A, then Ctrl+C, then paste here. You can paste several policies one after another."></textarea>
+        <div class="row" style="margin-top:8px"><button id="btnAdd" type="button">Add pasted text</button></div>
+      </div>
+    </div>
+    <div id="msg" class="msg" hidden></div>
+    <div id="sampleBar" class="samplebar" hidden>Showing a <b>sample client</b> with made-up figures. Add your own pages and the sample is replaced.</div>
+    <div class="row" style="justify-content:space-between">
+      <div class="row">
+        <span class="label">Policies loaded</span>
+        <div id="chips" class="chips"></div>
+      </div>
+      <div class="row">
+        <label class="label" for="person">Coverage for</label>
+        <select id="person"></select>
+        <button id="btnClear" type="button">Clear all</button>
+      </div>
+    </div>
+    <details>
+      <summary>How to get the data from ePartner</summary>
+      <ol>
+        <li>Open Customer Service → Policy Enquiry and search for the client.</li>
+        <li>Click a policy number to open its <b>Policy Detail Information</b> page.</li>
+        <li>Either press Ctrl+S and save as "Webpage, HTML only", or press Ctrl+A, Ctrl+C and paste the text above.</li>
+        <li>Repeat for each in-force policy. Optionally add the <b>Policy Listing</b> page too, so surrendered or withdrawn policies are listed.</li>
+      </ol>
+    </details>
+  </section>
+
+  <div id="out"></div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const state = { policies: [], listing: [], sample: true, person: null };
+
+/* ---------- helpers ---------- */
+const num = s => s == null ? 0 : parseFloat(String(s).replace(/,/g, "")) || 0;
+const pd = s => { if (!s) return null; const [d, m, y] = s.split("/").map(Number); return new Date(y, m - 1, d); };
+const fmt = (n, dp = 2) => Number(n).toLocaleString("en-MY", { minimumFractionDigits: dp, maximumFractionDigits: dp });
+const rm0 = n => "RM " + fmt(n, 0);
+const short = n => n >= 1e6 ? "RM " + (n / 1e6).toFixed(2).replace(/\.?0+$/, "") + "M" : n >= 1e4 ? "RM " + (n / 1e3).toFixed(1).replace(/\.0$/, "") + "k" : rm0(n);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const title = s => String(s || "").toLowerCase().replace(/\b([a-z])/g, c => c.toUpperCase()).replace(/\bIl\b/g, "IL").replace(/\bCi\b/g, "CI").replace(/\bTpd\b/g, "TPD").replace(/\bDd\b/g, "DD").replace(/\bR&b/g, "R&B").replace(/ (Of|And|For|By) /g, m => m.toLowerCase());
+const ageAt = (dob, when) => { if (!dob || !when) return null; let a = when.getFullYear() - dob.getFullYear(); const m = when.getMonth() - dob.getMonth(); if (m < 0 || (m === 0 && when.getDate() < dob.getDate())) a--; return a; };
+const pick = (re, s) => { const m = s.match(re); return m ? m[1].trim() : null; };
+const FREQ = { monthly: 12, quarterly: 4, "half yearly": 2, "half-yearly": 2, halfyearly: 2, "semi-annually": 2, yearly: 1, annually: 1, annual: 1, single: 0 };
+
+function htmlToText(html) {
+  const d = new DOMParser().parseFromString(html, "text/html");
+  d.querySelectorAll("script,style,noscript").forEach(e => e.remove());
+  d.querySelectorAll("td,th").forEach(c => c.append("\t"));
+  d.querySelectorAll("tr,br,p,div,h1,h2,h3,h4,li,table,option").forEach(e => e.append("\n"));
+  return d.body ? d.body.textContent : html;
+}
+const toLines = t => t.replace(/\r/g, "").replace(/\u00a0/g, " ").split("\n").map(l => l.replace(/[ \t]+/g, " ").trim()).filter(Boolean);
+
+/* ---------- parsing ---------- */
+const ROW = /^(.+?) ([A-Z]?\d{2,4}) (\d+) ([\d,]+\.\d{2}) ([\d,]+\.\d{2}) [\d.,]+ (\d\d\/\d\d\/\d{4}) (\d\d\/\d\d\/\d{4}) (\d\d\/\d\d\/\d{4}) (Inforce|In Force|Terminated ?\([^)]*\)|Terminated|Lapsed?|Matured|Claimed|Paid[- ]?Up|[A-Za-z]+(?: ?\([^)]*\))?)/;
+const ROW_G = new RegExp(ROW.source.slice(1), "g");
+
+function parseDetail(lines) {
+  const flat = lines.join(" ");
+  const p = {
+    pn: pick(/P\/N:\s*(\d{6,})/, flat),
+    asAt: pick(/as at\s+(\d\d\/\d\d\/\d{4})/i, flat),
+    status: pick(/Policy Status\s+([A-Za-z ]+?)\s+Currency/i, flat) || pick(/Policy Status\s+(\w+)/i, flat),
+    premStatus: pick(/Premium Status\s+(\w+)/i, flat),
+    freq: pick(/Payment Frequency\s+(Monthly|Quarterly|Half[- ]?Yearly|Semi-Annually|Yearly|Annually|Single)/i, flat),
+    premium: num(pick(/Total Installment Premium\s+([\d,]+\.\d{2})/i, flat)),
+    nextDue: pick(/Next Due Date\s+(\d\d\/\d\d\/\d{4})/i, flat),
+    lastPaid: pick(/Last Payment Date\s+(\d\d\/\d\d\/\d{4})/i, flat),
+    issued: pick(/Policy Issue Date\s+(\d\d\/\d\d\/\d{4})/i, flat),
+    method: pick(/Payment Method\s+([A-Z][A-Za-z' ]+?)\s+(?:Risk Commencement|Credit Card No|Lapse)/, flat),
+    overdue: num(pick(/Overdue Premium\s+([\d,]+\.\d{2})/i, flat)),
+    apl: num(pick(/APL Balance\s+([\d,]+\.\d{2})/i, flat)),
+    loan: num(pick(/Policy Loan Balance\s+([\d,]+\.\d{2})/i, flat)),
+    nsv: num(pick(/Net Surrender Value\s*\*?\s*([\d,]+\.\d{2})/i, flat)),
+    benefits: []
+  };
+  const la = flat.match(/Life Assured\s+(.+?)\s+[MF]\s.*?(\d\d\/\d\d\/\d{4})/);
+  const pr = flat.match(/Proposer\s+(.+?)\s+[MF]\s.*?(\d\d\/\d\d\/\d{4})/);
+  p.la = la ? la[1].trim() : "Unknown";
+  p.laDob = la ? la[2] : null;
+  p.proposer = pr ? pr[1].trim() : p.la;
+  p.proposerDob = pr ? pr[2] : null;
+
+  const i0 = lines.findIndex(l => /^BENEFIT DETAILS/i.test(l));
+  if (i0 >= 0) {
+    let i1 = lines.findIndex((l, i) => i > i0 && /^(The 'Annual Limit|Please refer to Total|ILP FUND DETAILS|POLICY VALUES)/i.test(l));
+    if (i1 < 0) i1 = lines.length;
+    const seg = lines.slice(i0 + 1, i1).filter(l => !/^Benefit Plan Code/i.test(l));
+    const mk = m => ({ name: m[1].replace(/^(?:[YN] )?(?:[A-Z]{1,3}\d{2,5} )?/, "").trim(), code: m[2], term: +m[3], sa: num(m[4]), prem: num(m[5]), start: m[6], end: m[7], premEnd: m[8], status: m[9] });
+    seg.forEach(l => { const m = l.match(ROW); if (m) p.benefits.push(mk(m)); });
+    if (!p.benefits.length) { const j = seg.join(" "); let m; ROW_G.lastIndex = 0; while ((m = ROW_G.exec(j))) p.benefits.push(mk(m)); }
+  }
+  p.benefits.forEach((b, i) => { b.basic = i === 0; b.active = /^in ?force/i.test(b.status); });
+  p.plan = p.benefits[0] ? p.benefits[0].name : "Plan";
+  p.planCode = p.benefits[0] ? p.benefits[0].code : "";
+  p.annual = p.premium * (FREQ[(p.freq || "").toLowerCase()] ?? 1);
+  return p;
+}
+
+function parseListing(lines) {
+  const rows = [];
+  lines.forEach(l => {
+    const m = l.match(/^\d+ (\d{10}) (.+)$/);
+    if (!m) return;
+    const st = l.match(/((?:Inforce|In Force|Terminated|waiting for validate|Lapsed?|Matured|Paid[- ]?Up|Claimed)[A-Za-z ]*\([^)]*\))/i);
+    if (!st) return;
+    const code = (l.slice(0, st.index).match(/ ([A-Z]?\d{3,4}) $/) || [])[1] || "";
+    rows.push({ pn: m[1], code, status: st[1] });
+  });
+  return rows;
+}
+
+function ingest(text, source) {
+  const lines = toLines(text);
+  let added = 0, listed = 0;
+  const starts = lines.map((l, i) => /Policy Detail Information for P\/N/i.test(l) ? i : -1).filter(i => i >= 0);
+  starts.forEach((s, k) => {
+    const p = parseDetail(lines.slice(s, starts[k + 1] ?? lines.length));
+    if (!p.pn) return;
+    if (state.sample) { state.policies = []; state.listing = []; state.sample = false; state.person = null; }
+    state.policies = state.policies.filter(x => x.pn !== p.pn).concat(p);
+    added++;
+  });
+  if (/Policy Listing/i.test(text) || /There are a total of \d+ records/i.test(text)) {
+    const rows = parseListing(lines);
+    if (rows.length) {
+      if (state.sample) { state.policies = []; state.listing = []; state.sample = false; state.person = null; }
+      const seen = new Set(rows.map(r => r.pn));
+      state.listing = state.listing.filter(r => !seen.has(r.pn)).concat(rows);
+      listed = rows.length;
+    }
+  }
+  return { added, listed, source };
+}
+
+/* ---------- classification ---------- */
+function category(b) {
+  const n = b.name.toUpperCase();
+  if (b.basic) return "life";
+  if (/WAIVER|PAYER/.test(n)) return "waiver";
+  if (/CRITICAL|\bCI\b|CANCER|DREAD/.test(n)) return /EARLY/.test(n) ? "ciEarly" : "ci";
+  if (/ACCIDENT/.test(n)) return "pa";
+  if (/HOSPITALI[SZ]ATION|HOSPITAL INCOME|HOSPITAL CASH|DAILY/.test(n)) return "hosp";
+  if (/MEDIC|EXTENDER|HEALTH|MEDICAL|SURGICAL/.test(n)) return "med";
+  if (/INCOME/.test(n)) return "income";
+  return "other";
+}
+
+function endLabel(b, dob) {
+  const e = pd(b.end);
+  if (!e || e.getFullYear() >= 9000) return "whole life";
+  const a = ageAt(dob, e);
+  return "to " + e.getFullYear() + (a != null ? " (age " + a + ")" : "");
+}
+
+/* ---------- render ---------- */
+function people() {
+  const counts = {};
+  state.policies.forEach(p => { counts[p.la] = (counts[p.la] || 0) + 1; });
+  const prop = {};
+  state.policies.forEach(p => { prop[p.proposer] = (prop[p.proposer] || 0) + 1; });
+  const top = Object.keys(prop).sort((a, b) => prop[b] - prop[a])[0];
+  const names = Object.keys(counts).sort((a, b) => (b === top) - (a === top) || counts[b] - counts[a]);
+  return names;
+}
+
+function renderControls() {
+  $("#sampleBar").hidden = !state.sample;
+  $("#chips").innerHTML = state.policies.map(p =>
+    `<span class="chip">${esc(p.pn)}<button type="button" aria-label="Remove ${esc(p.pn)}" data-rm="${esc(p.pn)}">×</button></span>`).join("")
+    + (state.listing.length ? `<span class="chip">Listing · ${state.listing.length} rows<button type="button" aria-label="Remove listing" data-rm="__listing">×</button></span>` : "")
+    || `<span class="note">None yet</span>`;
+  const names = people();
+  if (!names.includes(state.person)) state.person = names[0] || null;
+  $("#person").innerHTML = names.map(n => `<option ${n === state.person ? "selected" : ""}>${esc(n)}</option>`).join("");
+}
+
+function render() {
+  renderControls();
+  const out = $("#out");
+  if (!state.policies.length) {
+    out.innerHTML = `<div class="empty">Add at least one Policy Detail page to see the coverage summary.${state.listing.length ? "<br>The listing is loaded. It shows status only, so open each in-force policy and add its detail page too." : ""}</div>`;
+    return;
+  }
+  const who = state.person;
+  const all = state.policies.slice().sort((a, b) => (a.la !== who) - (b.la !== who) || b.annual - a.annual);
+  const inforce = all.filter(p => /in ?force/i.test(p.status || "inforce"));
+  const mine = inforce.filter(p => p.la === who);
+  const dobStr = (mine[0] || {}).laDob || (all.find(p => p.proposer === who) || {}).proposerDob;
+  const dob = pd(dobStr);
+  const asAt = all.map(p => p.asAt).filter(Boolean).sort((a, b) => pd(b) - pd(a))[0] || "";
+  const age = ageAt(dob, pd(asAt) || new Date());
+
+  const cats = { life: [], ci: [], ciEarly: [], med: [], hosp: [], pa: [], income: [], waiver: [], other: [] };
+  const dropped = [];
+  mine.forEach(p => p.benefits.forEach(b => {
+    if (!b.active) { dropped.push({ ...b, pn: p.pn }); return; }
+    cats[category(b)].push({ ...b, pn: p.pn });
+  }));
+  const sum = a => a.reduce((s, b) => s + b.sa, 0);
+  const life = sum(cats.life), ci = sum(cats.ci), ciE = sum(cats.ciEarly), ciAll = ci + ciE;
+  const cash = inforce.reduce((s, p) => s + p.nsv, 0);
+  const annual = inforce.reduce((s, p) => s + p.annual, 0);
+  const byFreq = {};
+  inforce.forEach(p => { const f = (p.freq || "—"); byFreq[f] = (byFreq[f] || 0) + p.premium; });
+  const freqNote = Object.entries(byFreq).map(([f, v]) => "RM " + fmt(v) + (/month/i.test(f) ? "/mth" : /quarter/i.test(f) ? "/qtr" : /half/i.test(f) ? "/half-yr" : "/yr")).join(" + ");
+
+  const li = (label, val) => `<li>${esc(label)} <b>${val}</b></li>`;
+  const ends = (arr, dobD) => [...new Set(arr.map(b => endLabel(b, dobD)))].join(" · ");
+  const card = (color, t, amount, items, till) => `<div class="s-card" style="--c:${color}"><div class="t">${t}</div><div class="a">${amount}</div><ul>${items}</ul>${till ? `<div class="till">${till}</div>` : ""}</div>`;
+
+  const cards = [];
+  if (cats.life.length) cards.push(card("#0f6a53", "Life / Death &amp; TPD", rm0(life),
+    cats.life.sort((a, b) => b.sa - a.sa).map(b => li(title(b.name), fmt(b.sa, 0))).join(""), "Basic plans · " + ends(cats.life, dob)));
+  if (cats.ci.length || cats.ciEarly.length) cards.push(card("#b8392c", "Critical Illness", rm0(ciAll),
+    cats.ci.concat(cats.ciEarly).sort((a, b) => b.sa - a.sa).map(b => li(title(b.name), fmt(b.sa, 0))).join(""),
+    [cats.ci.length ? "CI " + ends(cats.ci, dob) : "", cats.ciEarly.length ? "Early CI " + ends(cats.ciEarly, dob) : ""].filter(Boolean).join(" · ")));
+  if (cats.med.length || cats.hosp.length) {
+    const rb = Math.max(0, ...cats.med.filter(b => /MEDIC|MEDICAL/i.test(b.name)).map(b => b.sa));
+    const head = rb ? `R&amp;B RM ${fmt(rb, 0)} <small>/ day</small>` : cats.hosp.length ? `RM ${fmt(sum(cats.hosp), 0)} <small>/ day</small>` : "Covered";
+    cards.push(card("#2b5f9e", "Medical / Hospital", head,
+      cats.med.map(b => li(title(b.name), /EXTENDER/i.test(b.name) ? "Limit top-up" : "R&amp;B " + fmt(b.sa, 0))).join("")
+      + cats.hosp.map(b => li(title(b.name), "RM " + fmt(b.sa, 0) + "/day")).join(""),
+      ends(cats.med.concat(cats.hosp), dob)));
+  }
+  if (cats.pa.length) cards.push(card("#6f4bb3", "Personal Accident", rm0(sum(cats.pa)), cats.pa.map(b => li(title(b.name), fmt(b.sa, 0))).join(""), ends(cats.pa, dob)));
+  if (cats.income.length) cards.push(card("#c4721f", "Income Rider", rm0(sum(cats.income)), cats.income.map(b => li(title(b.name), fmt(b.sa, 0))).join(""), ends(cats.income, dob)));
+  if (cats.waiver.length) cards.push(card("#4a5d6b", "Premium Waivers", cats.waiver.length + (cats.waiver.length > 1 ? " riders" : " rider"), cats.waiver.map(b => `<li>${esc(title(b.name))}</li>`).join(""), "Premiums waived on a claim event (varies by rider)"));
+  if (cats.other.length) cards.push(card("#5b6f6b", "Other Riders", cats.other.length + "", cats.other.map(b => li(title(b.name), fmt(b.sa, 0))).join(""), ""));
+
+  /* review points */
+  const today = pd(asAt) || new Date();
+  const action = [];
+  inforce.forEach(p => {
+    const due = pd(p.nextDue);
+    if (p.overdue > 0) action.push(`<b>${esc(p.pn)} ${esc(title(p.plan))}:</b> RM ${fmt(p.overdue)} premium overdue${p.lastPaid ? " (last paid " + esc(p.lastPaid) + ")" : ""}.${p.nsv ? " Cash value RM " + fmt(p.nsv, 0) + "." : ""}`);
+    else if (due && due < new Date(today.getTime() - 31 * 864e5)) action.push(`<b>${esc(p.pn)}:</b> next due date ${esc(p.nextDue)} has passed.`);
+    if (p.apl > 0) action.push(`<b>${esc(p.pn)} ${esc(title(p.plan))}:</b> APL balance RM ${fmt(p.apl)}${p.nsv ? " against cash value RM " + fmt(p.nsv) : ""}.`);
+    if (p.loan > 0) action.push(`<b>${esc(p.pn)}:</b> policy loan RM ${fmt(p.loan)}.`);
+  });
+  const listedOnly = state.listing.filter(r => /^in ?force/i.test(r.status) && !state.policies.some(p => p.pn === r.pn));
+  if (listedOnly.length) action.push(`${listedOnly.length} in-force ${listedOnly.length > 1 ? "policies are" : "policy is"} on the listing without a detail page: ${listedOnly.map(r => esc(r.pn)).join(", ")}. Add them to complete the summary.`);
+
+  const gaps = [];
+  if (!cats.ci.length && !cats.ciEarly.length) gaps.push("No critical illness cover found.");
+  if (!cats.ciEarly.length && cats.ci.length) gaps.push("No early-stage CI cover found.");
+  if (!cats.med.length) gaps.push("No medical card / hospital & surgical rider found.");
+  if (!cats.pa.length) gaps.push("No personal accident cover found.");
+  ["pa", "ciEarly", "med", "income", "ci"].forEach(k => {
+    const lab = { pa: "Personal accident", ciEarly: "Early-stage CI", med: "Medical cover", income: "Income rider", ci: "Critical illness" }[k];
+    const latest = cats[k].map(b => pd(b.end)).filter(d => d && d.getFullYear() < 9000).sort((a, b) => b - a)[0];
+    const a = ageAt(dob, latest);
+    if (latest && a != null && a < 70) gaps.push(`${lab} ends at age ${a} (${latest.getFullYear()}).`);
+  });
+  if (dropped.length) gaps.push(`Cancelled or ended riders: ${[...new Set(dropped.map(b => title(b.name)))].join(", ")}.`);
+
+  const tag = p => p.overdue > 0 ? `<span class="tag bad">Overdue RM ${fmt(p.overdue, 0)}</span>` : p.apl > 0 ? `<span class="tag warn">APL ${fmt(p.apl, 0)}</span>` : /in ?force/i.test(p.status || "") ? `<span class="tag ok">In force</span>` : `<span class="tag mute">${esc(p.status || "—")}</span>`;
+  const per = f => /month/i.test(f || "") ? "/m" : /quarter/i.test(f || "") ? "/q" : /half/i.test(f || "") ? "/h" : "/y";
+
+  const inactive = state.listing.filter(r => !/^in ?force/i.test(r.status));
+  const inactiveHtml = inactive.length ? `<div class="s-h">Not in force (${inactive.length})</div>
+    <table class="s-table"><tr><th>Policy</th><th>Plan code</th><th>Status</th></tr>${inactive.map(r => `<tr><td>${esc(r.pn)}</td><td>${esc(r.code)}</td><td><span class="tag mute">${esc(r.status)}</span></td></tr>`).join("")}</table>` : "";
+
+  out.innerHTML = `<div class="sheetwrap"><div class="sheet" id="sheet">
+    <div class="s-head">
+      <div><h2>${esc(title(who))}</h2><div class="sub">Insurance Coverage Summary${state.sample ? " · SAMPLE DATA" : ""}</div></div>
+      <div class="r">${dobStr ? "DOB " + esc(dobStr) + (age != null ? " · Age " + age : "") + "<br>" : ""}${inforce.length} in-force ${inforce.length === 1 ? "policy" : "policies"}${asAt ? " · as at " + esc(asAt) : ""}</div>
+    </div>
+    <div class="s-kpis">
+      <div class="s-kpi"><div class="l">Death / TPD</div><div class="v">${short(life)}</div><div class="n">Basic sum assured, own life</div></div>
+      <div class="s-kpi"><div class="l">Critical Illness</div><div class="v">${short(ciAll)}</div><div class="n">${ciE ? "incl. " + short(ciE) + " early-stage" : "Total CI sum assured"}</div></div>
+      <div class="s-kpi"><div class="l">Total Cash Value</div><div class="v">${short(cash)}</div><div class="n">Net surrender value, ${inforce.length} ${inforce.length === 1 ? "policy" : "policies"}</div></div>
+      <div class="s-kpi"><div class="l">Annual Premium</div><div class="v">${short(annual)}</div><div class="n">${freqNote}</div></div>
+    </div>
+    <div class="s-h">Protection for ${esc(title(who))}</div>
+    ${cards.length ? `<div class="s-grid">${cards.join("")}</div>` : `<div class="s-box">No in-force benefits found for this person.</div>`}
+    <div class="s-h">Policy breakdown</div>
+    <table class="s-table"><tr><th>Policy</th><th>Plan</th><th>Life assured</th><th class="num">Premium</th><th class="num">Cash value</th><th>Status</th></tr>
+      ${all.map(p => `<tr><td>${esc(p.pn)}</td><td>${esc(title(p.plan))}</td><td>${p.la === who ? "Self" : esc(title(p.la))}</td><td class="num">${fmt(p.premium)}${per(p.freq)}</td><td class="num">${fmt(p.nsv)}</td><td>${tag(p)}</td></tr>`).join("")}
+    </table>
+    ${inactiveHtml}
+    <div class="s-h">Points to review</div>
+    <div class="s-two">
+      <div class="s-box alert"><h3>Action needed</h3>${action.length ? `<ul>${action.map(a => `<li>${a}</li>`).join("")}</ul>` : `<p style="margin:0;font-size:13px;color:#3d524d">No overdue premiums, APL or loans found.</p>`}</div>
+      <div class="s-box"><h3>Coverage notes</h3>${gaps.length ? `<ul>${gaps.map(g => `<li>${esc(g)}</li>`).join("")}</ul>` : `<p style="margin:0;font-size:13px;color:#3d524d">No gaps flagged.</p>`}</div>
+    </div>
+    <div class="s-foot">Source: ePartner policy details${asAt ? ", " + esc(asAt) : ""}. For internal review; benefits are subject to policy terms.</div>
+  </div></div>`;
+}
+
+/* ---------- input wiring ---------- */
+function flash(t) { const m = $("#msg"); m.textContent = t; m.hidden = !t; }
+async function handleFiles(files) {
+  let added = 0, listed = 0, bad = [];
+  for (const f of files) {
+    const raw = await f.text();
+    const text = /<html|<table|<body/i.test(raw) ? htmlToText(raw) : raw;
+    const r = ingest(text, f.name);
+    added += r.added; listed += r.listed;
+    if (!r.added && !r.listed) bad.push(f.name);
+  }
+  flash(bad.length ? `Couldn't find policy details in: ${bad.join(", ")}. Use the Policy Detail page or the Policy Listing page.` : "");
+  render();
+}
+const drop = $("#drop"), file = $("#file");
+drop.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); file.click(); } });
+file.addEventListener("change", () => { handleFiles([...file.files]); file.value = ""; });
+["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+drop.addEventListener("drop", e => handleFiles([...e.dataTransfer.files]));
+$("#btnAdd").addEventListener("click", () => {
+  const t = $("#paste").value;
+  if (!t.trim()) { flash("Paste the text of a Policy Detail page first."); return; }
+  const r = ingest(t, "paste");
+  if (!r.added && !r.listed) { flash("Couldn't find a policy in that text. Copy the whole Policy Detail page (Ctrl+A, then Ctrl+C)."); return; }
+  $("#paste").value = ""; flash(""); render();
+});
+$("#chips").addEventListener("click", e => {
+  const pn = e.target.dataset && e.target.dataset.rm; if (!pn) return;
+  if (pn === "__listing") state.listing = []; else state.policies = state.policies.filter(p => p.pn !== pn);
+  render();
+});
+$("#person").addEventListener("change", e => { state.person = e.target.value; render(); });
+$("#btnClear").addEventListener("click", () => { state.policies = []; state.listing = []; state.sample = false; state.person = null; flash(""); render(); });
+
+/* ---------- export ---------- */
+$("#btnSave").addEventListener("click", async () => {
+  const sheet = $("#sheet");
+  if (!sheet) { flash("Add policy data first."); return; }
+  if (!window.html2canvas) { flash("The image tool didn't load. Reload the page and try again."); return; }
+  try { await document.fonts.ready; } catch (_) {}
+  const canvas = await html2canvas(sheet, { scale: 2, backgroundColor: "#edf1f0", useCORS: true });
+  const blob = await new Promise(r => canvas.toBlob(r, "image/png"));
+  const name = title(state.person || "Client").replace(/[^A-Za-z0-9]+/g, "_") + "_Coverage_Summary.png";
+  let downloads = null;
+  try { downloads = window.claude && window.claude.use ? await window.claude.use("downloads") : null; } catch (_) {}
+  if (downloads) {
+    try { await downloads.save({ filename: name, data: blob }); flash(""); return; }
+    catch (err) { if (err && err.code === "declined") return; }
+  }
+  const url = URL.createObjectURL(blob);
+  if (!(window.claude && window.claude.use)) { const a = document.createElement("a"); a.href = url; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); return; }
+  const m = document.createElement("div");
+  m.className = "modal";
+  m.innerHTML = `<div class="in"><div class="row" style="justify-content:space-between"><b>Right-click or long-press the image to save it</b><button type="button">Close</button></div><img alt="Coverage summary" src="${url}" style="width:100%"></div>`;
+  m.querySelector("button").onclick = () => { m.remove(); URL.revokeObjectURL(url); };
+  document.body.append(m);
+});
+
+/* ---------- sample client (made-up figures) ---------- */
+const T = "\t";
+const sample = [
+`Policy Detail Information for P/N: 9000000011 as at 28/10/2026
+Insured Name${T}Gender${T}ID No
+Proposer${T}SAMPLE CLIENT${T}F${T}XXXXXX-XX-XXXX${T}Y${T}15/03/1985${T}Y${T}N
+Life Assured${T}SAMPLE CLIENT${T}F${T}XXXXXX-XX-XXXX${T}Y${T}15/03/1985${T}Non-Muslim${T}30${T}Y${T}N
+Policy Status${T}Inforce${T}Currency${T}Ringgit (Malaysia)
+Premium Status${T}Regular${T}Payment Frequency${T}Monthly
+Auto Reinstatement Eligiblity Indicator${T}N${T}Total Installment Premium${T}450.00
+Next Due Date${T}15/11/2026
+Policy Issue Date${T}15/04/2015${T}Payment Method${T}Credit Card
+Last Payment Date${T}15/10/2026
+Overdue Premium${T}0.00${T}Suspense${T}0.00
+APL Balance${T}0.00${T}APA Balance${T}0.00
+Policy Loan Balance${T}0.00${T}CB Balance${T}0.00
+BENEFIT DETAILS
+Benefit${T}Plan Code${T}Term${T}Sum Assured${T}Std Installment Premium${T}GST Amount${T}Cover Start Date${T}Cover End Date${T}Premium End Date${T}Status/Reason
+SAMPLE PROTECT INSURANCE${T}0281${T}0${T}500,000.00${T}450.00${T}0${T}15/04/2015${T}09/09/9999${T}09/09/9999${T}Inforce${T}N
+CRITICAL ILLNESS BENEFIT RIDER${T}U100${T}64${T}300,000.00${T}60.00${T}0${T}15/04/2015${T}14/04/2079${T}14/04/2079${T}Inforce${T}N
+EARLY PAYOUT CRITICALCARE${T}U86${T}35${T}100,000.00${T}25.00${T}0${T}15/04/2015${T}14/04/2050${T}14/04/2050${T}Inforce${T}N
+SAMPLE MEDIC XTRA${T}U120${T}45${T}200.00${T}80.00${T}0${T}15/04/2015${T}14/04/2060${T}14/04/2060${T}Inforce${T}N
+IL ACCIDENTCARE BENEFIT${T}U39${T}25${T}50,000.00${T}10.00${T}0${T}15/04/2015${T}14/04/2040${T}14/04/2040${T}Inforce${T}N
+WAIVER OF PREMIUM PLUS RIDER${T}U78${T}40${T}20,000.00${T}5.00${T}0${T}15/04/2015${T}14/04/2055${T}14/04/2055${T}Inforce${T}N
+The 'Annual Limit Balance' and 'Lifetime Limit Balance' will be displayed once the medical rider(s) is in effect.
+POLICY VALUES
+Net Surrender Value *${T}38,420.50`,
+`Policy Detail Information for P/N: 9000000022 as at 28/10/2026
+Proposer${T}SAMPLE CLIENT${T}F${T}XXXXXX-XX-XXXX${T}Y${T}15/03/1985${T}Y${T}N
+Life Assured${T}SAMPLE CLIENT${T}F${T}XXXXXX-XX-XXXX${T}Y${T}15/03/1985${T}Non-Muslim${T}26${T}Y${T}N
+Policy Status${T}Inforce${T}Currency${T}Ringgit (Malaysia)
+Premium Status${T}Regular${T}Payment Frequency${T}Yearly
+Total Installment Premium${T}1,200.00
+Next Due Date${T}20/01/2027
+Policy Issue Date${T}20/01/2011${T}Payment Method${T}Cash${T}Risk Commencement Date
+Last Payment Date${T}18/01/2026
+Overdue Premium${T}0.00
+APL Balance${T}2,150.00
+Policy Loan Balance${T}0.00
+BENEFIT DETAILS
+Benefit${T}Plan Code${T}Term${T}Sum Assured${T}Std Installment Premium${T}GST Amount${T}Cover Start Date${T}Cover End Date${T}Premium End Date${T}Status/Reason
+SAMPLE ENDOWMENT PLAN${T}0273${T}25${T}30,000.00${T}1,200.00${T}0${T}20/01/2011${T}19/01/2036${T}19/01/2036${T}Inforce${T}N
+POLICY VALUES
+Net Surrender Value *${T}9,870.00`,
+`Policy Detail Information for P/N: 9000000033 as at 28/10/2026
+Proposer${T}SAMPLE CLIENT${T}F${T}XXXXXX-XX-XXXX${T}Y${T}15/03/1985${T}Y${T}N
+Life Assured${T}SAMPLE CHILD${T}M${T}XXXXXX-XX-XXXX${T}Y${T}02/06/2014${T}Non-Muslim${T}2${T}Y${T}N
+Policy Status${T}Inforce${T}Currency${T}Ringgit (Malaysia)
+Premium Status${T}Regular${T}Payment Frequency${T}Monthly
+Total Installment Premium${T}150.00
+Next Due Date${T}02/11/2026
+Last Payment Date${T}02/10/2026
+Overdue Premium${T}0.00
+APL Balance${T}0.00
+Policy Loan Balance${T}0.00
+BENEFIT DETAILS
+Benefit${T}Plan Code${T}Term${T}Sum Assured${T}Std Installment Premium${T}GST Amount${T}Cover Start Date${T}Cover End Date${T}Premium End Date${T}Status/Reason
+SAMPLE JUNIOR PLAN${T}0408${T}0${T}100,000.00${T}150.00${T}0${T}02/06/2016${T}09/09/9999${T}09/09/9999${T}Inforce${T}N
+POLICY VALUES
+Net Surrender Value *${T}6,240.00`
+];
+sample.forEach(s => { const lines = toLines(s); const p = parseDetail(lines); if (p.pn) state.policies.push(p); });
+state.sample = true;
+render();
+window.__parse = { toLines, parseDetail, parseListing, htmlToText };
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+# keep client data out of the repo
+*.htm
+!index.html
+*.txt
+*.png
